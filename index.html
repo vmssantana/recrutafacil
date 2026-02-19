@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>RecrutaFácil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-semibold">RecrutaFácil</span>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#" data-module="dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-module="postos">Postos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-module="vagas">Vagas</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-module="candidatos">Candidatos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-module="processo">Processo Seletivo</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-module="admissao">Pré‑Admissão</a></li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-light btn-sm" id="btnSair" title="Sair">Sair</button>
+        <span class="badge text-bg-secondary" id="sessionBadge">NÃO AUTENTICADO</span>
+        <button class="btn btn-outline-light btn-sm" id="btnLogin">Entrar</button>
+        <button class="btn btn-outline-warning btn-sm d-none" id="btnLogout">Sair</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-3">
+  <!-- Dashboard -->
+  <section id="mod-dashboard" class="module active">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">Dashboard</h4>
+      <div class="d-flex align-items-center gap-2" id="resetWrap">
+        <button class="btn btn-outline-danger btn-sm" id="btnResetDB">Resetar dados (teste)</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="btnResetHelp" data-bs-toggle="modal" data-bs-target="#modalAjudaReset" aria-label="Ajuda do reset">
+          <i class="bi bi-question-circle"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="text-muted">Postos ativos</div>
+            <div class="display-6" id="kpiPostos">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="text-muted">Vagas ativas</div>
+            <div class="display-6" id="kpiVagas">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="text-muted">Candidatos ativos</div>
+            <div class="display-6" id="kpiCandidatos">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="text-muted">Pré‑admissões pendentes</div>
+            <div class="display-6" id="kpiPre">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-3">
+      <div class="fw-semibold">Dica</div>
+      <div>Cadastre ou importe Postos → crie Vagas → vincule Candidatos no Processo → aprove e acompanhe na Pré‑Admissão.</div>
+    </div>
+  </section>
+
+  <!-- Postos -->
+  <section id="mod-postos" class="module">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="mb-0">Postos</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="btnExportPostos"><i class="bi bi-download"></i> Exportar CSV</button>
+        <button class="btn btn-outline-primary btn-sm" id="btnImportarPostos"><i class="bi bi-upload"></i> Importar Postos</button>
+        <button class="btn btn-primary btn-sm" id="btnNovoPosto"><i class="bi bi-plus-lg"></i> Novo Posto</button>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-md-6">
+        <input class="form-control form-control-sm" id="postosSearch" placeholder="Buscar... (ID, nome, cidade, lotação, etc.)">
+      </div>
+      <div class="col-md-6 text-end small text-muted">
+        <span id="postosCount">0 registro(s)</span>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th><th>Nome</th><th>Número</th><th>Turno</th><th>Lotação</th><th>Cidade</th><th>Supervisão</th><th class="text-nowrap">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="postosTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vagas -->
+  <section id="mod-vagas" class="module">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="mb-0">Vagas (Requisições)</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="btnExportVagas"><i class="bi bi-download"></i> Exportar CSV</button>
+        <button class="btn btn-primary btn-sm" id="btnNovaVaga"><i class="bi bi-plus-lg"></i> Nova Requisição</button>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-md-6">
+        <input class="form-control form-control-sm" id="vagasSearch" placeholder="Buscar... (ID, posto, status)">
+      </div>
+      <div class="col-md-6 text-end small text-muted">
+        <span id="vagasCount">0 registro(s)</span>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0 table-vagas">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Posto</th>
+              <th>Motivos</th>
+              <th>Solicitante</th>
+              <th>Data Cadastro</th>
+              <th>Data início no posto</th>
+              <th>Status</th>
+              <th class="text-nowrap">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="vagasTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Candidatos -->
+  <section id="mod-candidatos" class="module">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="mb-0">Candidatos</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="btnExportCandidatos"><i class="bi bi-download"></i> Exportar CSV</button>
+        <button class="btn btn-primary btn-sm" id="btnNovoCand"><i class="bi bi-plus-lg"></i> Novo Candidato</button>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-md-6">
+        <input class="form-control form-control-sm" id="candSearch" placeholder="Buscar... (ID, nome, contato, cargo, cidade)">
+      </div>
+      <div class="col-md-6 text-end small text-muted">
+        <span id="candCount">0 registro(s)</span>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th><th>Nome</th><th>Contato</th><th>Cargo Interesse</th><th class="text-nowrap">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="candTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Processo -->
+  <section id="mod-processo" class="module">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="mb-0">Processo Seletivo</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="btnExportProcesso"><i class="bi bi-download"></i> Exportar CSV</button>
+      </div>
+    </div>
+
+    <div class="row g-2 mb-2">
+      <div class="col-md-6">
+        <input class="form-control form-control-sm" id="processoSearch" placeholder="Buscar vagas... (ID, posto, status)">
+      </div>
+      <div class="col-md-6 text-end small text-muted">
+        <span id="processoCount">0 vaga(s)</span>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID Vaga</th><th>Posto</th><th>Data Cadastro</th><th>Data Prevista</th><th>Status</th><th class="text-nowrap">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="processoVagasTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pré-Admissão -->
+  <section id="mod-admissao" class="module">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="mb-0">Pré‑Admissão</h4>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" id="btnExportPre"><i class="bi bi-download"></i> Exportar CSV</button>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th><th>Candidato</th><th>Posto</th><th>Status</th><th>Data Início</th><th class="text-nowrap">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="preTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
+
+<!-- MODAL LOGIN -->
+<div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Entrar</h5>
+      </div>
+      <div class="modal-body">
+        <form id="formLoginModal">
+        <div class="alert alert-danger d-none" id="loginError"></div>
+        <div class="mb-2">
+          <label class="form-label">Usuário</label>
+          <input class="form-control" id="loginUser" autocomplete="username">
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Senha</label>
+          <input type="password" class="form-control" id="loginPass" autocomplete="current-password">
+        </div>
+</div>
+              </form>
+<div class="modal-footer">
+        <button class="btn btn-primary" id="btnDoLogin" type="submit" form="formLoginModal">Entrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL POSTO -->
+<div class="modal fade" id="modalPosto" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="postoModalTitle">POSTO</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="postoForm" class="row g-2 needs-validation" novalidate>
+          <div class="col-md-2">
+            <label class="form-label">ID</label>
+            <input class="form-control form-control-sm readonly" id="postoId" readonly>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Nome do Posto *</label>
+            <input class="form-control form-control-sm" id="postoNome" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Número *</label>
+            <input class="form-control form-control-sm" id="postoNumero" required>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Turno *</label>
+            <input class="form-control form-control-sm" id="postoTurno" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Lotação *</label>
+            <input class="form-control form-control-sm" id="postoLotacao" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Cidade *</label>
+            <input class="form-control form-control-sm" id="postoCidade" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Supervisão *</label>
+            <input class="form-control form-control-sm" id="postoSupervisao" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnPostoSave">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPORTAR POSTOS -->
+<div class="modal fade" id="modalImportarPostos" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Importar Postos</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="dropzone" id="postoDropzone">
+          Arraste o arquivo aqui ou clique para selecionar (CSV/TXT)
+          <input type="file" id="postoFile" class="d-none" accept=".csv,.txt">
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm" id="btnLerArquivoPostos"><i class="bi bi-eye"></i> Ler e pré-visualizar</button>
+          <button class="btn btn-primary btn-sm" id="btnConfirmarImportacaoPostos" disabled><i class="bi bi-check2"></i> Importar</button>
+        </div>
+        <div class="mt-3" id="importPreview"></div>
+        <div class="alert alert-success mt-2 d-none" id="importResult"></div>
+        <div class="small text-muted">
+          Modelo: <code>docs/modelos/postos_exemplo.csv</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VAGA -->
+<div class="modal fade" id="modalVaga" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="vagaModalTitle">VAGA</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="vagaForm" class="row g-2 needs-validation" novalidate>
+          <div class="col-md-2">
+            <label class="form-label">ID</label>
+            <input class="form-control form-control-sm readonly" id="vagaId" readonly>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Posto *</label>
+            <select class="form-select form-select-sm" id="vagaPosto" required>
+              <option value="">SELECIONE UM POSTO</option>
+            </select>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Motivo *</label>
+            <select class="form-select form-select-sm" id="vagaMotivo" required></select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Solicitante *</label>
+            <select class="form-select form-select-sm" id="vagaSolicitante" required></select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Data de Cadastro</label>
+            <input class="form-control form-control-sm readonly" id="vagaDataCadastro" readonly>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Data de início no posto *</label>
+            <input type="date" class="form-control form-control-sm" id="vagaDataPrevista" required>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Justificativa</label>
+            <textarea class="form-control form-control-sm" id="vagaJustificativa" rows="2"></textarea>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select class="form-select form-select-sm" id="vagaStatus">
+              <option value="RASCUNHO">RASCUNHO</option>
+              <option value="ENVIADA">ENVIADA</option>
+              <option value="REJEITADA">REJEITADA</option>
+              <option value="FINALIZADA">FINALIZADA</option>
+            </select>
+          </div>
+        </form>
+        <div class="small text-muted mt-2">Observação: campos são armazenados em maiúsculas automaticamente.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" id="btnVagaSave">Salvar</button>
+        <button class="btn btn-primary" id="btnEnviarRH">ENVIAR PARA O RH</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CANDIDATO -->
+<div class="modal fade" id="modalCandidato" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="candModalTitle">CANDIDATO</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="candForm" class="row g-2 needs-validation" novalidate>
+          <div class="col-md-2">
+            <label class="form-label">ID</label>
+            <input class="form-control form-control-sm readonly" id="candId" readonly>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Nome Completo *</label>
+            <input class="form-control form-control-sm" id="candNome" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Contato (WhatsApp) *</label>
+            <input class="form-control form-control-sm" id="candContato" required placeholder="(DDD) 9XXXX-XXXX">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Cargo de Interesse *</label>
+            <select class="form-select form-select-sm" id="cargoInteresse" required></select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Cidade de Interesse *</label>
+            <select id="cidadeInteresse" name="cidadeInteresse" class="form-select form-select-sm" required>
+              <option value="">SELECIONE UMA CIDADE</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Observações</label>
+            <textarea class="form-control form-control-sm" id="candObs" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnCandSave">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROCESSO -->
+<div class="modal fade" id="modalProcesso" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Iniciar Processo Seletivo</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-2 mb-3">
+          <div class="col-md-2">
+            <label class="form-label">ID Vaga</label>
+            <input class="form-control form-control-sm readonly" id="psVagaId" readonly>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Posto</label>
+            <input class="form-control form-control-sm readonly" id="psPosto" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Data Cadastro</label>
+            <input class="form-control form-control-sm readonly" id="psDataCadastro" readonly>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Data Prevista</label>
+            <input class="form-control form-control-sm readonly" id="psDataPrevista" readonly>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header fw-semibold">Vincular candidato</div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-md-2">
+                <label class="form-label">ID Candidato</label>
+                <input class="form-control form-control-sm" id="psIdCandidato" placeholder="C001">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Nome</label>
+                <input class="form-control form-control-sm readonly" id="psNomeCandidato" readonly>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Contato</label>
+                <input class="form-control form-control-sm readonly" id="psContatoCandidato" readonly>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <input class="form-control form-control-sm readonly" id="psStatusCandidato" readonly value="EM ANÁLISE">
+              </div>
+              <div class="col-md-12">
+                <button class="btn btn-primary btn-sm" id="btnVincularCandidato"><i class="bi bi-link-45deg"></i> Vincular Candidato</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-semibold">Candidatos vinculados</div>
+          <div class="small text-muted" id="psInfo"></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-striped">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th><th>Nome</th><th>Contato</th><th>Status</th><th>Data de Vinculação</th><th class="text-nowrap">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="psCandsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALTERAR STATUS CANDIDATO -->
+<div class="modal fade" id="modalStatusCand" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Alterar Status</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-4">
+            <label class="form-label">ID</label>
+            <input class="form-control form-control-sm readonly" id="stCandId" readonly>
+          </div>
+          <div class="col-8">
+            <label class="form-label">Nome</label>
+            <input class="form-control form-control-sm readonly" id="stCandNome" readonly>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Contato</label>
+            <input class="form-control form-control-sm readonly" id="stCandContato" readonly>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Status</label>
+            <select class="form-select form-select-sm" id="stCandStatus"></select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnSalvarStatusCand">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRÉ-ADMISSÃO -->
+<div class="modal fade" id="modalPreAdmissao" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pré‑Admissão</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="preResumo"></div>
+
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label">Status da Admissão</label>
+            <select class="form-select form-select-sm" id="preStatus">
+              <option value="PENDENTE">PENDENTE</option>
+              <option value="FINALIZADA">FINALIZADA</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Status do Candidato</label>
+            <select class="form-select form-select-sm" id="preCandStatus">
+              <option value="APROVADO">APROVADO</option>
+              <option value="DESISTENTE">DESISTENTE</option>
+            </select>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">FICHA DE ADMISSÃO</label>
+            <input type="file" class="form-control form-control-sm" id="fileFicha" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+            <button class="btn btn-success btn-sm mt-2 w-100" id="btnWA_Ficha"><i class="bi bi-whatsapp"></i> ENVIAR PARA WHATSAPP</button>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">LISTA DE DOCUMENTOS</label>
+            <input type="file" class="form-control form-control-sm" id="fileChecklist" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+            <button class="btn btn-success btn-sm mt-2 w-100" id="btnWA_Check"><i class="bi bi-whatsapp"></i> ENVIAR PARA WHATSAPP</button>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">FICHA DE VALE TRANSPORTE</label>
+            <input type="file" class="form-control form-control-sm" id="fileVT" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+            <button class="btn btn-success btn-sm mt-2 w-100" id="btnWA_VT"><i class="bi bi-whatsapp"></i> ENVIAR PARA WHATSAPP</button>
+          </div>
+        </div>
+
+        <div class="alert alert-warning small mt-3">
+          <strong>Observação:</strong> o WhatsApp Web não permite anexar arquivo automaticamente via link. O sistema abre a conversa com a mensagem; você anexa o arquivo manualmente.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" id="btnSalvarPre">Salvar</button>
+        <button class="btn btn-danger" id="btnArquivarPre">Arquivar (Finalizar)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Supabase (autenticação + dados) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/db.js"></script>
+
+<!-- Scripts do sistema -->
+<script src="js/storage.js"></script>
+<script src="js/postos.js"></script>
+<script src="js/vagas.js"></script>
+<script src="js/candidatos.js"></script>
+<script src="js/processo.js"></script>
+<script src="js/admissao.js"></script>
+
+<script>
+  // Bloqueio de acesso sem login (Supabase)
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      await Auth.garantirLogado();
+    } catch (e) {
+      console.error("Falha ao validar sessão:", e);
+      window.location.href = "login.html";
+    }
+  });
+</script>
+
+<script>
+  // Inicialização do app
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.App && typeof App.init === "function") App.init();
+  });
+</script>
+
+<script>
+  // Botão Sair
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "btnSair") Auth.logout();
+  });
+</script>
+</body>
+
+</html>

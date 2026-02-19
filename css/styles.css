@@ -1,0 +1,123 @@
+/* RecrutaFácil - styles.css (consolidado) */
+
+:root{
+  --rf-readonly-bg: #f2f4f7;
+}
+
+.module { display:none; }
+.module.active { display:block; }
+
+.readonly, .form-control[readonly], .form-select[disabled], .form-control[disabled]{
+  background: var(--rf-readonly-bg) !important;
+}
+
+.table-sm td, .table-sm th { vertical-align: middle; }
+
+.badge-soft {
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.dropzone {
+  border: 2px dashed #ced4da;
+  border-radius: .5rem;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone.border-primary { border-color: #0d6efd !important; }
+
+/* ADICIONAR APENAS ESTE CSS - NÃO MODIFICAR EXISTENTE */
+.btn-postos-acao {
+    width: 80px !important;
+    margin: 0 2px !important;
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+}
+
+/* ADICIONAR APENAS ESTE CSS - NÃO MODIFICAR EXISTENTE */
+.btn-vagas-acao {
+    width: 70px !important;
+    margin: 0 3px !important;
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    display: inline-block !important;
+}
+
+.btn-ps-acao{
+  width: 78px;
+}
+
+.card-resumo {
+  border-left: 6px solid #198754;
+  background: #f6fffa;
+}
+
+/* ===== LAYOUT: EVITAR QUEBRA DE LINHA EM TABELAS ===== */
+.table td, .table th {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Truncar textos longos sem quebrar linha */
+.rf-truncate {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+/* Coluna Nome mais larga (Postos) */
+.col-nome-wide {
+  min-width: 320px;
+}
+
+@media (min-width: 992px) {
+  .rf-truncate { max-width: 520px; }
+  .col-nome-wide { min-width: 420px; }
+}
+
+/* Botões de ação compactos (ícones) */
+.btn-acao-icon {
+  width: 36px !important;
+  padding: 4px 6px !important;
+  font-size: 15px !important;
+  line-height: 1.1 !important;
+}
+
+/* ===== Layout: evitar quebra em células compostas (Postos/Vagas) ===== */
+.rf-cell-nowrap{
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+/* Badges de status com ícones (compacto e legível) */
+.badge-status-icon{
+  padding: .35rem .45rem;
+  font-size: .85rem;
+}
+
+/* ===== VAGAS: LARGURAS PARA EVITAR DESALINHAMENTO E ROLAGEM ===== */
+.table-vagas{
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* ID */
+.table-vagas th:nth-child(1), .table-vagas td:nth-child(1){ width: 70px; }
+/* Posto */
+.table-vagas th:nth-child(2), .table-vagas td:nth-child(2){ width: 240px; }
+/* Motivos */
+.table-vagas th:nth-child(3), .table-vagas td:nth-child(3){ width: 220px; }
+/* Solicitante */
+.table-vagas th:nth-child(4), .table-vagas td:nth-child(4){ width: 170px; }
+/* Data Cadastro */
+.table-vagas th:nth-child(5), .table-vagas td:nth-child(5){ width: 140px; }
+/* Data início no posto */
+.table-vagas th:nth-child(6), .table-vagas td:nth-child(6){ width: 150px; }
+/* Status */
+.table-vagas th:nth-child(7), .table-vagas td:nth-child(7){ width: 80px; }
+/* Ações */
+.table-vagas th:nth-child(8), .table-vagas td:nth-child(8){ width: 90px; }
